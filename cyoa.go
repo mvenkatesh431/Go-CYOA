@@ -8,10 +8,11 @@ import (
 	"text/template"
 )
 
-type Story map[string]Chapter
-
 // The html template fileName.
+//const TemplFileName string = "default.html"
 const TemplFileName string = "custTmpl-1.html"
+
+type Story map[string]Chapter
 
 type Chapter struct {
 	Title   string   `json:"title"`
@@ -24,8 +25,8 @@ type Option struct {
 	Chapter string `json:"chapter"`
 }
 
-// GetDefaultTempl reads the html template file, Returns it as a string
-func GetDefaultTempl(fileName string) string {
+// GetTempl reads the html template file, Returns it as a string
+func GetTempl(fileName string) string {
 
 	body, err := os.ReadFile(fileName)
 	if err != nil {
@@ -36,18 +37,19 @@ func GetDefaultTempl(fileName string) string {
 }
 
 // Will return a new http.Handler
-func GetHandler(s Story) http.Handler {
-	return handler{s}
+func GetHandler(s Story, tmplName string) http.Handler {
+	return handler{s, tmplName}
 }
 
 // handler interface for Story, Which implements the ServeHTTP
 type handler struct {
-	s Story
+	s    Story
+	tmpl string
 }
 
 // ServeHTTP method of handler Story
 func (h handler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
-	tpl := template.Must(template.New("").Parse(GetDefaultTempl(TemplFileName)))
+	tpl := template.Must(template.New("").Parse(GetTempl(h.tmpl)))
 
 	// Parse the path and display the specific page
 	path := strings.TrimSpace(req.URL.Path)

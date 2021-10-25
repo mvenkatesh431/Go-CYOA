@@ -11,6 +11,10 @@ import (
 	"os"
 )
 
+// The html template fileName.
+//const templFileName string = "custTmpl-1.html"
+const templFileName string = "default.html"
+
 func main() {
 	portNumber := flag.Int("port", 8000, "Port Number to run web server")
 	fileName := flag.String("json", "gophers.json", "JSON file with the CYOA stories")
@@ -31,7 +35,7 @@ func main() {
 	// }
 
 	// Get the http.Handler
-	handler := cyoa.GetHandler(story)
+	handler := cyoa.GetHandler(story, templFileName)
 	fmt.Println("Starting the Server on port", *portNumber)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", *portNumber), handler))
 }
