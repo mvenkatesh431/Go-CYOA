@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title> 📚 CYOA - {{ .Title }}}</title>
+  <style>
+   body {
+       background-color: #ffffff;
+   }
+
+   #mid {
+       max-width: 600px;
+       margin: auto;
+       padding: 30px;
+       border: 3px solid rgb(146, 146, 146);
+       background-color: #f3ebe3;
+   }
+
+   h1 {
+       text-align: center;
+   }
+
+   a {
+       padding: 10px;
+       text-decoration: none;
+   }
+
+   #choice {
+       font-size: 20px;
+   }
+  </style>
+</head>
+
+<body>
+  <div id="mid">
+  <h1>📚 {{ .Title }}</h1>
+  {{ range $s := .Para }}
+  <p>{{ $s }}</p>
+  {{ end }}
+
+  {{ range $o := .Options }}
+  <span id="choice">&#8594;</span><a href="{{ $o.Chapter }}">{{ $o.Text }}</a><br><br>
+  {{ end }}
+  </div>
+</body>
+</html>

@@ -1,2 +1,3 @@
 # Go-CYOA
-Choose your adventure go practice project
+Choose your adventure GoLang practice project
+
