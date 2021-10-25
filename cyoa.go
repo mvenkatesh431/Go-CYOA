@@ -11,7 +11,7 @@ import (
 type Story map[string]Chapter
 
 // The html template fileName.
-const TemplFileName string = "default.html"
+const TemplFileName string = "custTmpl-1.html"
 
 type Chapter struct {
 	Title   string   `json:"title"`
