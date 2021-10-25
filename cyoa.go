@@ -9,8 +9,7 @@ import (
 )
 
 // The html template fileName.
-//const TemplFileName string = "default.html"
-const TemplFileName string = "custTmpl-1.html"
+const TemplFileName string = "default.html"
 
 type Story map[string]Chapter
 
@@ -25,6 +24,12 @@ type Option struct {
 	Chapter string `json:"chapter"`
 }
 
+// handler interface for Story, Which implements the ServeHTTP
+type handler struct {
+	s    Story
+	tmpl string
+}
+
 // GetTempl reads the html template file, Returns it as a string
 func GetTempl(fileName string) string {
 
@@ -36,15 +41,26 @@ func GetTempl(fileName string) string {
 	return string(body)
 }
 
-// Will return a new http.Handler
-func GetHandler(s Story, tmplName string) http.Handler {
-	return handler{s, tmplName}
+type HandlerOptions func(h *handler)
+
+func WithHandlerOptions(tmplName string) HandlerOptions {
+	return func(h *handler) {
+		h.tmpl = tmplName
+	}
 }
 
-// handler interface for Story, Which implements the ServeHTTP
-type handler struct {
-	s    Story
-	tmpl string
+// Will return a new http.Handler
+func GetHandler(s Story, opts ...HandlerOptions) http.Handler {
+	// The default handler will use the TemplFileName template, which is "default.html"
+	h := handler{s, TemplFileName}
+	for _, opt := range opts {
+		// This calls the HandlreOptions function, which is returned by WithHandlerOptions func
+		// Set the 'tmpl' as the user provided option.
+		// user call should be something like below
+		// 	handler := cyoa.GetHandler(story, cyoa.WithHandlerOptions("fileName"))
+		opt(&h)
+	}
+	return h
 }
 
 // ServeHTTP method of handler Story
