@@ -78,7 +78,6 @@ func (h handler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 	// Now we can use the handler's ParseFunction
 	path := h.parseFunction(req)
-	log.Println("Got Request for :", path)
 
 	if chapter, ok := h.s[path]; ok {
 		err := tpl.Execute(w, chapter)
@@ -101,6 +100,7 @@ func parseDefaultPath(req *http.Request) string {
 	if path == "" || path == "/" {
 		path = "/intro"
 	}
+	log.Printf("Got Request for page '%s', Serving from defaultMux \n", path)
 	path = path[1:]
 	return path
 }
