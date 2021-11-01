@@ -9,11 +9,13 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 )
 
 // The html template fileName.
 //const templFileName string = "default.html"
-const templFileName string = "custTmpl-1.html"
+//const templFileName string = "custTmpl-1.html"
+const templFileName string = "custStoryTmpl.html"
 
 func main() {
 	portNumber := flag.Int("port", 8000, "Port Number to run web server")
@@ -35,7 +37,16 @@ func main() {
 	// }
 
 	// Get the http.Handler
-	handler := cyoa.GetHandler(story, cyoa.WithHandlerOptions(templFileName))
+	// To use the default template, don't pass the second argument
+	handler := cyoa.GetHandler(story, cyoa.WithHandlerTmpl(templFileName),
+		cyoa.WithHandlerPathFunc(parseStoryPath))
+
+	// For the request like '/story/intro', If the user not providing the '/story', Then chapater won't found
+	// So we will use the mux
+	mux := http.NewServeMux()
+	// Now we are going to give the all requests with '/story/' to 'handler', Othre will get 404 not found
+	mux.Handle("/story/", handler)
+
 	fmt.Println("Starting the Server on port", *portNumber)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", *portNumber), handler))
 }
@@ -48,4 +59,19 @@ func JsonStory(file io.Reader) (cyoa.Story, error) {
 		return nil, err
 	}
 	return story, nil
+}
+
+// This function takes the request path as '/story/intro' type
+func parseStoryPath(req *http.Request) string {
+	// Parse the path and display the specific page
+	path := strings.TrimSpace(req.URL.Path)
+	if path == "/story" || path == "/story/" {
+		path = "/story/intro"
+	}
+
+	// If the path won't contain the '/story/', We end up going 'slice out of bounds', So server will get run time error
+	if strings.Contains(path, "/story/") {
+		path = path[len("/story/"):]
+	}
+	return path
 }
